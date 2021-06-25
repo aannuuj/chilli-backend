@@ -1,5 +1,5 @@
 {
-  "name": "hari-backend",
+  "name": "chilli",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "Nikhilesh Ram",
+  "author": "Chilli",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",

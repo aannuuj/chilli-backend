@@ -70,6 +70,8 @@ app.post('/success', (req, res) => {
     res.sendFile('./sucess.html')
 })
 
-app.listen(1337, () => {
-    console.log('Listening to port 1337')
+var port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+    console.log('Listening to port 3000')
 });
