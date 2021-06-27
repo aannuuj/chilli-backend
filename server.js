@@ -4,7 +4,8 @@ const bodyParser = require('body-parser');
 const Razorpay = require('razorpay');
 const shortid = require('shortid');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://adminID:hariom@cluster0.i9rco.mongodb.net/chillyDatabse?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://admin:hariom@chillies.wga9i.mongodb.net/chillyDatabse?retryWrites=true&w=majority');
+
 
 mongoose.connection.once('open', function () {
     console.log('Database is now connected');
