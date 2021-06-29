@@ -4,7 +4,7 @@ const bodyParser = require('body-parser');
 const Razorpay = require('razorpay');
 const shortid = require('shortid');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb+srv://admin:hariom@chillies.wga9i.mongodb.net/chillyDatabse?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://admin:hariom@chillies.wga9i.mongodb.net/chillyDatabse?retryWrites=true&w=majority',{ useNewUrlParser: true, useUnifiedTopology: true });
 
 
 mongoose.connection.once('open', function () {
@@ -21,27 +21,10 @@ const razorpay = new Razorpay({
     key_secret: 'fJSw6jK9vIBQAzcUXDMnPssC'
 })
 
-app.post('/verification',(req, res) => {
-    res.json({status: 'ok'});
-    const secret = '12345678';
-    //console.log(req.body.payload.payment);
-    const crypto = require('crypto');
-    const shasum = crypto.createHmac('sha256',secret);
-    shasum.update(JSON.stringify(req.body));
-    const digest = shasum.digest('hex');
-    if(digest === req.headers['x-razorpay-signature']){
-        console.log('request is correct');
-    }
-    else{
-        console.log('false request');
-    }
-})
-
 app.post('/razorpay', async (req, res) => {
     const paymentCapture = 1;
     const amount = req.body.amount;
     const currency = 'INR';
-    //console.log(req.body)
     const options = {
         amount: amount*100,
         currency: currency,
@@ -50,26 +33,49 @@ app.post('/razorpay', async (req, res) => {
     }
     try{
         const response = await razorpay.orders.create(options);
+        const customer = new chillieCustomer({...req.body, orderId : response.id})
+        customer.save()
+        res.status(200)
         res.json({
             id: response.id,
             currency: 'INR',
             amount: response.amount
         })
     }catch(error){
+        res.status(404).send({ error: 'Something broke from razorpay, we are fixing this, we request you to try again in a moment' })
         console.log(error)
     }
-    //console.log('order id has been sent');
+   
 })
 app.post('/formData', (req, res) => {
-    const customer = new chillieCustomer(req.body)
-    customer.save()
-        .then(() => console.log("data saved to database"))
+      chillieCustomer.updateOne({orderId : req.body.orderId }, {$set : {paymentId : req.body.paymentId, signature : req.body.signature}})
+        .then(() => {
+            console.log("data saved to database")
+        res.status(200)
+    } )
         .catch(err => console.log(err))
 })
 
-app.post('/success', (req, res) => {
-    res.sendFile('./sucess.html')
+
+app.post('/verification',(req, res) => {
+    res.json({status: 'ok'});
+    const secret = '12345678';
+    const crypto = require('crypto');
+    const shasum = crypto.createHmac('sha256',secret);
+    shasum.update(JSON.stringify(req.body));
+    const digest = shasum.digest('hex');
+    if(digest === req.headers['x-razorpay-signature']){
+        //TODO: change the secret key
+        const signature = req.body.id
+        chillieCustomer.updateOne({signature : signature }, {$set : {paymentStatus : "paid"}})
+
+        console.log('request is correct');
+    }
+    else{
+        console.log('false request');
+    }
 })
+
 
 var port = process.env.PORT || 3000;
 

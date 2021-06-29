@@ -9,7 +9,8 @@ const chillieCustomer = new mongoose.Schema({
     suggestions: String,
     paymentId: String,
     orderId: String,
-    signature: String
+    signature: String,
+    paymentStatus: String
 })
 module.exports = mongoose.model('customer', chillieCustomer);
 
