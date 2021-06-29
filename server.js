@@ -50,17 +50,22 @@ app.post('/razorpay', async (req, res) => {
     }
     try{
         const response = await razorpay.orders.create(options);
+        //Todo: save data to backend with payment status unpaid
+        // const customer = new chillieCustomer(req.body)
+        // customer.save()
         res.json({
             id: response.id,
             currency: 'INR',
             amount: response.amount
         })
     }catch(error){
+        //Todo: send error alert the could not create order
         console.log(error)
     }
-    //console.log('order id has been sent');
+   
 })
 app.post('/formData', (req, res) => {
+      //Todo: save data to backend with payment status paid
     const customer = new chillieCustomer(req.body)
     customer.save()
         .then(() => console.log("data saved to database"))
