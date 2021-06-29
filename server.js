@@ -21,6 +21,10 @@ const razorpay = new Razorpay({
     key_secret: 'fJSw6jK9vIBQAzcUXDMnPssC'
 })
 
+app.get('/', function(req, res){
+    res.send('<h1>Justice served, cool cool cool cool!</h1>');
+  });
+
 app.post('/verification',(req, res) => {
     res.json({status: 'ok'});
     const secret = '12345678';
